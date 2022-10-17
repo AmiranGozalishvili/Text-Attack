@@ -1,0 +1,10 @@
+version: '3.3'
+
+services:
+  text_attack:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - 8001:8001
