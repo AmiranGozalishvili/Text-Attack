@@ -4,18 +4,18 @@ from keras.layers import LSTM
 from keras.models import Sequential
 from sklearn.metrics import classification_report
 
-from Train_Test import train_test
-from data import load_data
-from tokenization import tokenize
+# from Train_Test import train_test
+# from data import load_data
+# from tokenization import tokenize
 
-df = load_data()
+# df = load_data()
+#
+# maxlen, tokenizer, X_test_pad, X_train_pad, word_index = tokenize()
+#
+# X_train, X_test, y_train, y_test = train_test(df)
 
-maxlen, tokenizer, X_test_pad, X_train_pad, word_index = tokenize()
 
-X_train, X_test, y_train, y_test = train_test(df)
-
-
-def lstm_net():
+def lstm_net(X_train_pad, X_test_pad, y_train, y_test, word_index, maxlen):
     # initiate LSTM for sequence classification
     model = Sequential()
 
@@ -55,4 +55,5 @@ def lstm_net():
     print("lstm_network, classification_report")
     print(classification_report(y_test, y_test_pred))
     print("lstm Network checkpoint")
+
     return model

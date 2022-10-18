@@ -1,30 +1,15 @@
-import nltk
-import numpy as np
 import torch
-from textattack.datasets import Dataset
-from textattack.models.wrappers import ModelWrapper
-
-nltk.download('omw-1.4')
-from textattack.goal_functions.classification import UntargetedClassification
+from keras_preprocessing.sequence import pad_sequences
+from textattack import Attack
+from textattack import AttackArgs
+from textattack import Attacker
 from textattack.constraints.pre_transformation import RepeatModification, StopwordModification
 from textattack.constraints.semantics import WordEmbeddingDistance
-from textattack.transformations import WordSwapEmbedding
+from textattack.datasets import Dataset
+from textattack.goal_functions.classification import UntargetedClassification
+from textattack.models.wrappers import ModelWrapper
 from textattack.search_methods import GreedyWordSwapWIR
-from textattack import Attack
-from textattack import Attacker
-from textattack import AttackArgs
-from keras_preprocessing.sequence import pad_sequences
-from Train_Test import random_state
-
-from data import load_data
-from lstm_network import lstm_net
-from tokenization import tokenize
-
-dataset = load_data()
-model = lstm_net()
-
-maxlen, tokenizer, X_test_pad, X_train_pad, word_index = tokenize()
-
+from textattack.transformations import WordSwapEmbedding
 
 
 class CustomTensorFlowModelWrapper(ModelWrapper):
@@ -33,18 +18,17 @@ class CustomTensorFlowModelWrapper(ModelWrapper):
     run TextAttack with a custom TensorFlow model.
     """
 
-    def __init__(self, model):
+    def __init__(self, model, tokenizer, maxlen, dataset):
         self.model = model
-        # self.tokenizer = tokenizer
-        # self.maxlen = maxlen
-        # self.dataset = dataset
-
+        self.tokenizer = tokenizer
+        self.maxlen = maxlen
+        self.dataset = dataset
 
     def __call__(self, text_input_list):
         # retrieve model prediction
-        text_array = np.array(text_input_list)
-        tokens = tokenizer.texts_to_sequences(text_input_list)
-        tokens_pad = pad_sequences(tokens, maxlen=maxlen)
+        # text_array = np.array(text_input_list)
+        tokens = self.tokenizer.texts_to_sequences(text_input_list)
+        tokens_pad = pad_sequences(tokens, maxlen=self.maxlen)
         model_pred = self.model.predict(tokens_pad)
 
         # return prediction scores as torch.Tensors
@@ -57,32 +41,29 @@ class CustomTensorFlowModelWrapper(ModelWrapper):
 
         return final_preds
 
-
     """## Creating the Attack"""
 
-def create_attack():
+
+def create_attack(model, tokenizer, maxlen, dataset, random_state):
     '''
     text attack
     '''
-
+    model_wrapper = CustomTensorFlowModelWrapper(model, tokenizer, maxlen, dataset)
     # example output
-    CustomTensorFlowModelWrapper(model)(["this is negative text. bad terrible awful.",
-                                         "this is positive text. great amazing love"])
+    model_wrapper(["this is negative text. bad terrible awful.",
+                   "this is positive text. great amazing love"])
 
     # example of a successful text atack which fools the model into predicting the wrong label
     t1 = 'i love the tie dye and the accent stitching. back detail is fun!'
     t2 = 'i adore the tie colouring and the accent stitching. back detail is amusing!'
-    CustomTensorFlowModelWrapper(model)([t1, t2])
-
-    # initialize the model wrapper with the trained LSTM
-    model_wrapper = CustomTensorFlowModelWrapper(model)
+    model_wrapper([t1, t2])
 
     # textattack requires custom datasets to be presented as a list of (input, ground-truth label) pairs
     data_pairs = []
     for input, label in zip(dataset['Review Text'], dataset['Recommended IND']):
         data_pairs.append((input, label))
 
-    new_dataset = Dataset(data_pairs, shuffle=True)
+    data_pairs_dataset = Dataset(data_pairs, shuffle=True)
 
     goal_function = UntargetedClassification(model_wrapper)
 
@@ -99,24 +80,24 @@ def create_attack():
     # construct the actual attack++
     attack = Attack(goal_function, constraints, transformation, search_method)
 
-
     # def attack_until_res():
     # attack until 1000 successfull attacks are reached
     attack_args = AttackArgs(num_examples=10,
                              random_seed=random_state)
 
-    attacker = Attacker(attack, new_dataset, attack_args)
+    attacker = Attacker(attack, data_pairs_dataset, attack_args)
 
     attack_results = attacker.attack_dataset()
-    print(attack_results)
+    # attack_results_json = json.dumps(attack_results)
+    # load_json = json.loads(attack_results_json)
+
+    # attack_results_json = json.dumps(attack_results)
+    # print(attack_results)
+    # print(type(attack_results))
+    # print("json", attack_results_json)
+    # print("json type", type(attack_results_json))
+    # # print(attack_results_json)
     return attack_results
-
-# create_attack()
-
-
-
-
-
 
 # # display the attack results and the differences
 # logger = CSVLogger(color_method='html')

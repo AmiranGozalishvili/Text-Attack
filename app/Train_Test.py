@@ -1,15 +1,7 @@
 from sklearn.model_selection import train_test_split
 
-from data import load_data
 
-df = load_data()
-
-# define a random seed for reproducible results
-random_state = 42
-
-
-
-def train_test(df):
+def train_test(df, random_state):
     X = df.drop('Recommended IND', axis=1)
     y = df['Recommended IND']
 
@@ -20,4 +12,3 @@ def train_test(df):
                                                         shuffle=True)
     print("train test checkpoint")
     return X_train, X_test, y_train, y_test
-

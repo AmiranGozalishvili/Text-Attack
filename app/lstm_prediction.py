@@ -1,31 +1,16 @@
 from keras_preprocessing.sequence import pad_sequences
 
-from Train_Test import train_test
-from data import load_data
-from lstm_network import lstm_net
-from tokenization import tokenize
 
-df = load_data()
-
-
-X_train, X_test, y_train, y_test = train_test(df)
-
-maxlen, tokenizer, X_test_pad, X_train_pad, word_index = tokenize()
-
-model = lstm_net()
+# # 5 randomely selected reviews
+# reviews = ["this dress is perfection! so pretty and flattering.",
+#            "this is my new favorite top! looks and fits as described.",
+#            "i could wear this every day, it is stylish and comfortable",
+#            "material is too thin and quality is poor",
+#            "it is nice material but the design makes you look like a pregnant lady"]
+#
 
 
-# 5 randomely selected reviews
-reviews = ["this dress is perfection! so pretty and flattering.",
-           "this is my new favorite top! looks and fits as described.",
-           "i could wear this every day, it is stylish and comfortable",
-           "material is too thin and quality is poor",
-           "it is nice material but the design makes you look like a pregnant lady"]
-
-
-
-def model_pred(text):
-
+def model_pred(text, model, tokenizer, maxlen):
     """
       Use the trained LSTM to make predictions on new examples.
       """
@@ -47,7 +32,6 @@ def model_pred(text):
     print("lstm prediction checkpoint")
     return result
 
-
-for i in reviews:
-    model_pred(i)
-
+# for i in reviews:
+#     model_pred(i)
+#

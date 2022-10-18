@@ -8,7 +8,7 @@ RUN pip install keras
 RUN pip install textattack
 RUN pip install tensorflow_text
 RUN pip install IPython
-
+RUN python -c "import nltk; nltk.download('omw-1.4')"
 
 COPY ./app /app
 

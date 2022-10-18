@@ -1,19 +1,20 @@
 from keras.preprocessing.text import Tokenizer
 from keras_preprocessing.sequence import pad_sequences
 
-from Train_Test import train_test
-from data import load_data
 
-df = load_data()
-X_train, X_test, y_train, y_test = train_test(df)
+# utilize the most frequently apprearing words in the corpus
+# num_words = 10000
 
+def init_tokenizer(num_words = 10000):
 
-def tokenize():
-    # utilize the most frequently apprearing words in the corpus
-    num_words = 10000
     # tokenize the training data
     tokenizer = Tokenizer(num_words=num_words,
                           filters='!"#$%&()*+,-./:;<=>?@[\\]^_`{|}~\t\n1234567890')
+    return tokenizer
+
+
+def tokenize(tokenizer, X_train, X_test):
+
     corpus = X_train['Review Text'].tolist() + X_test['Review Text'].tolist()
     tokenizer.fit_on_texts(corpus)
 
@@ -37,4 +38,5 @@ def tokenize():
     print("Padded shape (training):".ljust(25), X_train_pad.shape)
     print("Padded shape (test):".ljust(25), X_test_pad.shape)
     print("tokenizer checkpoint")
-    return maxlen, tokenizer, X_test_pad, X_train_pad, word_index
+
+    return X_train_pad, X_test_pad, tokenizer, word_index, maxlen
