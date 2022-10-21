@@ -136,12 +136,12 @@ print(classification_report(y_test, y_test_pred))
 """## Save Model (optional)"""
 
 # save the entire model
-model.save('LSTM_Raw_Dataset')
+model.save('LSTM_Raw_Dataset_old')
 
 """## Load Model (optional)"""
 
 # reload a fresh Keras model from the saved model
-new_model = tf.keras.models.load_model('/content/LSTM_Raw_Dataset')
+new_model = tf.keras.models.load_model('/content/LSTM_Raw_Dataset_old')
 
 # retrieve the maxlen variable of the model
 model_config = new_model.get_config()

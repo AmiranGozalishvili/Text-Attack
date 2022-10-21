@@ -3,6 +3,9 @@ from keras.layers import Embedding
 from keras.layers import LSTM
 from keras.models import Sequential
 from sklearn.metrics import classification_report
+import tensorflow as tf
+import os
+
 
 # from Train_Test import train_test
 # from data import load_data
@@ -49,8 +52,26 @@ def lstm_net(X_train_pad, X_test_pad, y_train, y_test, word_index, maxlen):
 
     print("model save")
     """ Save Model (optional)"""
-    # save the entire model
-    model.save('data/model/LSTM_Raw_Dataset')
+    # importing os module
+
+
+    # Specify path
+    path = 'data/model/LSTM_Raw_Dataset'
+
+    # Check whether the specified
+    # path exists or not
+    # isExist = os.path.exists(path)
+
+    if os.path.exists(path):
+        print("path exists")
+        new_model = tf.keras.models.load_model('data/model/LSTM_Raw_Dataset')
+    else:
+        print("saving model")
+        # save the entire model
+        model.save('data/model/LSTM_Raw_Dataset')
+
+    # # save the entire model
+    # model.save('data/model/LSTM_Raw_Dataset_old')
 
     print("lstm_network, classification_report")
     print(classification_report(y_test, y_test_pred))

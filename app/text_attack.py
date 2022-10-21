@@ -1,3 +1,5 @@
+# import json
+import tensorflow as tf
 import torch
 from keras_preprocessing.sequence import pad_sequences
 from textattack import Attack
@@ -88,15 +90,7 @@ def create_attack(model, tokenizer, maxlen, dataset, random_state):
     attacker = Attacker(attack, data_pairs_dataset, attack_args)
 
     attack_results = attacker.attack_dataset()
-    # attack_results_json = json.dumps(attack_results)
-    # load_json = json.loads(attack_results_json)
 
-    # attack_results_json = json.dumps(attack_results)
-    # print(attack_results)
-    # print(type(attack_results))
-    # print("json", attack_results_json)
-    # print("json type", type(attack_results_json))
-    # # print(attack_results_json)
     return attack_results
 
 # # display the attack results and the differences

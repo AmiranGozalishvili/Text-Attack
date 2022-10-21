@@ -8,8 +8,6 @@ from lstm_prediction import model_pred
 from text_attack import create_attack
 from tokenization import tokenize, init_tokenizer
 
-# from fastapi.encoders import jsonable_encoder
-# from fastapi.responses import JSONResponse
 
 nltk.download('omw-1.4')
 
@@ -28,7 +26,7 @@ X_train_pad, X_test_pad, tokenizer, word_index, maxlen = tokenize(tokenizer, X_t
 model = lstm_net(X_train_pad, X_test_pad, y_train, y_test, word_index, maxlen)
 
 attack_result = create_attack(model, tokenizer, maxlen, df, RANDOM_STATE)
-print(type(attack_result))
+
 @app.get('/')
 def get_root():
     return {'message': 'Welcome to Text Attack API'}
@@ -46,14 +44,14 @@ def lstm_prediction(text):
 @app.get('/text_attack')
 def lstm_text_attack():
 
-    return attack_result
+    return str(attack_result[0])
 
 
 
 # Nltk, textattack download to docker
-# attack result to json
+# attack result to json   !!!!!
 # model training cache
-#lstm net if model: load model
+#lstm net if model: load model   +++
 
 #create attack cache
 
